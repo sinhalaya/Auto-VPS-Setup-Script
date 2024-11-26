@@ -27,8 +27,8 @@ Ensure your VPS has access to the internet and supports the following commands:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/<your-repository>.git
-cd <your-repository>
+git clone https://github.com/sinhalaya/Auto-VPS-Setup-Script.git
+cd Auto-VPS-Setup-Script
 ```
 
 ### 2. Make the Script Executable
