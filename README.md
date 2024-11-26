@@ -1,4 +1,5 @@
-# Auto VPS Setup Script
+
+# Auto VPS Setup Script - Basic
 
 This script automates the initial setup of a VPS (Virtual Private Server). It performs the following tasks:
 
@@ -25,7 +26,27 @@ Ensure your VPS has access to the internet and supports the following commands:
 
 ## Installation and Usage
 
-### 1. Clone the Repository
+### 1. Install Git and Clone the Repository
+
+If Git is not installed on your system, follow these steps to install it:
+
+#### For Debian-based Systems (Ubuntu, Debian):
+```bash
+sudo apt update
+sudo apt install git -y
+```
+
+#### For RHEL-based Systems (CentOS, Fedora):
+```bash
+sudo yum install git -y
+```
+
+#### For Arch-based Systems:
+```bash
+sudo pacman -S git
+```
+
+Once Git is installed, clone the repository:
 ```bash
 git clone https://github.com/sinhalaya/Auto-VPS-Setup-Script.git
 cd Auto-VPS-Setup-Script
