@@ -7,7 +7,7 @@ This script automates the initial setup of a VPS (Virtual Private Server). It pe
 2. **System Update & Upgrade**: Ensures the system is up-to-date.
 3. **Required Tools Installation**: Installs necessary tools like `dnsutils` or `bind-utils` for hostname validation.
 4. **Hostname Configuration**: Prompts the user to enter a hostname, validates its DNS A record, and applies it.
-5. **Timezone Setup**: Allows the user to set the server timezone.
+5. **Timezone Setup**: Allows the user to set the server timezone and it's optional. If the user opts not to set the timezone, the script sets the timezone to Asia/Colombo.
 6. **SSH Port Change**: Provides an option to change the SSH port for added security.
 7. **Server Restart**: Optionally restarts the server after setup.
 
