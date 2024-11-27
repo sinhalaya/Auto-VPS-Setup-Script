@@ -7,7 +7,7 @@ This script automates the initial setup of a VPS (Virtual Private Server). It pe
 2. **System Update & Upgrade**: Ensures the system is up-to-date.
 3. **Required Tools Installation**: Installs necessary tools like `dnsutils` or `bind-utils` for hostname validation.
 4. **Hostname Configuration**: Prompts the user to enter a hostname, validates its DNS A record, and applies it.
-5. **Timezone Setup**: Allows the user to set the server timezone and it's optional. If the user opts not to set the timezone, the script sets the timezone to Asia/Colombo.
+5. **Timezone Setup**: Allows timezone configuration with `Asia/Colombo` as the default if skipped.
 6. **SSH Port Change**: Provides an option to change the SSH port for added security.
 7. **Server Restart**: Optionally restarts the server after setup.
 
@@ -65,6 +65,8 @@ sudo ./auto_setup_vps.sh
 
 ---
 
+
+
 ## Workflow
 
 1. The script detects the operating system.
@@ -77,6 +79,21 @@ sudo ./auto_setup_vps.sh
 5. Optionally restarts the server to apply changes.
 
 ---
+
+## Steps to Delete the Downloaded Script
+
+Remove the Script File - Assuming the script is named auto_setup_vps.sh and located in your current working directory
+```bash
+rm -f auto_setup_vps.sh
+```
+Remove the Entire Script Folder (Optional) - If you cloned the GitHub repository or saved the script in a directory, delete the entire folder
+```bash
+rm -rf Auto-VPS-Setup-Script
+```
+Confirm Deletion
+```bash
+ls
+```
 
 ## License
 
