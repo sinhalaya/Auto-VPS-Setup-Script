@@ -1,82 +1,129 @@
 #!/bin/bash
 
+# Auto VPS Setup Script - Basic
+# This script automates the setup of a VPS.
+
 set -e
 
-# Function to check for root privileges
+# Function to check if the user is root
 check_root() {
     if [ "$EUID" -ne 0 ]; then
-        echo "Please run as root."
+        echo "This script must be run as root. Use 'sudo' to execute it."
         exit 1
     fi
 }
 
-# Function to detect OS and install required tools
-install_tools() {
+# Function to update and upgrade the system
+update_system() {
+    echo "Updating and upgrading the system..."
     if [ -f /etc/debian_version ]; then
         apt update && apt upgrade -y
-        apt install -y dnsutils curl
-        os="Debian-based"
     elif [ -f /etc/redhat-release ]; then
         yum update -y
-        yum install -y bind-utils curl
-        os="RHEL-based"
     else
         echo "Unsupported operating system."
         exit 1
     fi
-    echo "System updated and required tools installed."
+    echo "System updated successfully."
 }
 
-# Function to validate hostname's A record
-validate_hostname() {
+# Function to install required tools
+install_tools() {
+    echo "Installing required tools..."
+    if [ -f /etc/debian_version ]; then
+        apt install -y dnsutils curl
+    elif [ -f /etc/redhat-release ]; then
+        yum install -y bind-utils curl
+    fi
+    echo "Required tools installed successfully."
+}
+
+# Function to set the hostname
+set_hostname() {
+    local hostname=""
     while true; do
-        read -rp "Enter the hostname for this server: " hostname
+        read -rp "Enter the new hostname: " hostname
         if host "$hostname" > /dev/null 2>&1; then
-            echo "Hostname validated with A record."
             hostnamectl set-hostname "$hostname"
+            echo "Hostname set to $hostname."
             break
         else
-            echo "Invalid hostname or A record not found. Try again."
+            echo "The hostname $hostname does not have a valid A record. Please try again."
         fi
     done
+
+    update_hosts_file "$hostname"
 }
 
-# Function to set the server timezone
+# Function to update /etc/hosts with the new hostname
+update_hosts_file() {
+    local new_hostname="$1"
+    echo "Updating /etc/hosts with the new hostname: $new_hostname"
+
+    # Backup the original /etc/hosts file
+    cp /etc/hosts /etc/hosts.bak
+
+    # Remove any previous hostname entries and add the new one
+    sed -i '/127.0.1.1/d' /etc/hosts
+    echo "127.0.1.1    $new_hostname" >> /etc/hosts
+
+    echo "/etc/hosts updated successfully."
+}
+
+# Function to set the timezone
 set_timezone() {
-    read -rp "Enter your timezone (e.g., 'America/New_York'): " timezone
+    echo "Available timezones:"
+    timedatectl list-timezones | less
+
+    local timezone=""
+    read -rp "Enter your preferred timezone (e.g., 'Asia/Colombo'): " timezone
     if timedatectl set-timezone "$timezone"; then
         echo "Timezone set to $timezone."
     else
-        echo "Invalid timezone. Please try again."
+        echo "Failed to set timezone. Please ensure the input is valid."
     fi
 }
 
-# Function to change SSH port
+# Function to change the SSH port
 change_ssh_port() {
-    read -rp "Do you want to change the SSH port? (y/n): " change_port
-    if [[ "$change_port" =~ ^[Yy]$ ]]; then
-        read -rp "Enter the new SSH port: " ssh_port
-        sed -i "s/^#Port 22/Port $ssh_port/" /etc/ssh/sshd_config
-        sed -i "s/^Port 22/Port $ssh_port/" /etc/ssh/sshd_config
-        systemctl reload sshd
-        echo "SSH port changed to $ssh_port."
+    local change_port=""
+    read -rp "Do you want to change the SSH port? (yes/no): " change_port
+
+    if [[ "$change_port" == "yes" ]]; then
+        local new_port=""
+        read -rp "Enter the new SSH port: " new_port
+
+        # Update sshd_config
+        sed -i "s/#Port 22/Port $new_port/" /etc/ssh/sshd_config
+        echo "SSH port changed to $new_port."
+
+        # Restart SSH service
+        systemctl restart sshd
+        echo "SSH service restarted."
     fi
 }
 
-# Function to prompt for server restart
+# Function to restart the server
 restart_server() {
-    read -rp "Do you want to restart the server now? (y/n): " restart
-    if [[ "$restart" =~ ^[Yy]$ ]]; then
+    local restart=""
+    read -rp "Do you want to restart the server now? (yes/no): " restart
+    if [[ "$restart" == "yes" ]]; then
+        echo "Restarting the server..."
         reboot
     else
-        echo "Setup complete. Please restart the server manually later."
+        echo "Server restart skipped. Please reboot manually if required."
     fi
 }
 
-# Main script execution
-check_root
-install_tools
-validate_hostname
-set_timezone
-change_ssh_port
-restart_server
+# Main script
+main() {
+    check_root
+    update_system
+    install_tools
+    set_hostname
+    set_timezone
+    change_ssh_port
+    restart_server
+}
+
+main
