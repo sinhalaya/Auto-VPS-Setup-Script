@@ -70,17 +70,26 @@ update_hosts_file() {
     echo "/etc/hosts updated successfully."
 }
 
-# Function to set the timezone
+# Function to optionally set the timezone
 set_timezone() {
-    echo "Available timezones:"
-    timedatectl list-timezones | less
+    local set_tz=""
+    read -rp "Do you want to set the timezone? (yes/no): " set_tz
 
-    local timezone=""
-    read -rp "Enter your preferred timezone (e.g., 'Asia/Colombo'): " timezone
-    if timedatectl set-timezone "$timezone"; then
-        echo "Timezone set to $timezone."
+    if [[ "$set_tz" == "yes" ]]; then
+        echo "Available timezones:"
+        timedatectl list-timezones | less
+
+        local timezone=""
+        read -rp "Enter your preferred timezone (e.g., 'Asia/Colombo'): " timezone
+        if timedatectl set-timezone "$timezone"; then
+            echo "Timezone set to $timezone."
+        else
+            echo "Failed to set timezone. Please ensure the input is valid."
+        fi
     else
-        echo "Failed to set timezone. Please ensure the input is valid."
+        echo "No timezone specified. Setting default timezone to Asia/Colombo..."
+        timedatectl set-timezone "Asia/Colombo"
+        echo "Default timezone set to Asia/Colombo."
     fi
 }
 
